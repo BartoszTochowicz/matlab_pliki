@@ -26,7 +26,7 @@ symStr = repelem(symStr,sps);
 %przez sygnał postaci e^jwt. Użyj funkcji exp i real. W Matlabie jednostke
 %urojoną zapisujemy jako 1i
 fc=3e4;
-cplxMod = symStr.*exp(1i*fc*2*pi*(0:1:(length(symStr)-1)));
+cplxMod = symStr.*exp(1i*fc*2*pi*(0:1:(length(symStr)-1)/Ts));
 %pwelch(cplxMod,4096,[],[],1/Ts,'centered');
 realMod=real(cplxMod);
 %zrobione? TAK, to oglądamy
