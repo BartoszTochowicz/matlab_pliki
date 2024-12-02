@@ -26,7 +26,9 @@ symStr = repelem(symStr,sps);
 %przez sygnał postaci e^jwt. Użyj funkcji exp i real. W Matlabie jednostke
 %urojoną zapisujemy jako 1i
 fc=3e4;
-cplxMod = symStr.*exp(1i*fc*2*pi*(0:1:(length(symStr)-1)/Ts));
+% cplxMod = (symStr.*exp(1i*fc*(0:1:(length(symStr)-1))*Ts)')';
+t = (0:(length(symStr)-1)) * Ts; % czas próbkowania
+cplxMod = symStr .* exp(1i * 2 * pi * fc * t)';
 %pwelch(cplxMod,4096,[],[],1/Ts,'centered');
 realMod=real(cplxMod);
 %zrobione? TAK, to oglądamy
@@ -37,22 +39,24 @@ plot(realMod);
 %Widzieliśmy już diagramy konstelacji zatem zobaczmy też rzeczywistą postać
 %sygnału po filtracji
 
-% %TODO 5: wygeneruj filtr o charakterystyce podniesiony cosinus (RC)
-% %korzystając z funkcji rcosdesign. Pamiętaj, że w naszym przypadku mamy sps
-% %próbek na symbol, natomiast uzyskanie dobrej jakości filtracji zapewnia
-% %filtr obejmujący co najmniej 10 symboli. Przyjmij współczynnik poszerzenia
-% %pasma na poziomie 0,35
-% rcFiltr=...;
-% %TODO 6: zastosuj operację filtracji wygenerowanym filtrem do sygnału ze
-% %zmiennej symStr. Użyj funkcji upfirdn
-% rcSyms=upfirdn(symStr,rcFiltr,1,1);
-% rcSyms=rcSyms(floor(length(rcFiltr)/2)+1:end-floor(length(rcFiltr)/2)); % a co to za linijka? Zastanów się co robi i po co 
-% %TODO 7: przesuń sygnał w dziedzinie częstotliwości o 30 kHz tak żeby się
-% %go przyjemnie oglądało. Krótko mówiąc zrób dokładnie to samo co w punkcie
-% %todo 4
-% cplxModRC=...;
-% realModRC=real(cplxModRC);
-% title('postać rzeczywista sygnału QPSK filtrowanego filtrem RC');
-% plot(realModRC);
+%TODO 5: wygeneruj filtr o charakterystyce podniesiony cosinus (RC)
+%korzystając z funkcji rcosdesign. Pamiętaj, że w naszym przypadku mamy sps
+%próbek na symbol, natomiast uzyskanie dobrej jakości filtracji zapewnia
+%filtr obejmujący co najmniej 10 symboli. Przyjmij współczynnik poszerzenia
+%pasma na poziomie 0,35
+rcFiltr= rcosdesign(0.35,10,sps);
+%TODO 6: zastosuj operację filtracji wygenerowanym filtrem do sygnału ze
+%zmiennej symStr. Użyj funkcji upfirdn
+rcSyms=upfirdn(symStr,rcFiltr,1,1);
+rcSyms=rcSyms(floor(length(rcFiltr)/2)+1:end-floor(length(rcFiltr)/2)); % a co to za linijka? Zastanów się co robi i po co 
+%TODO 7: przesuń sygnał w dziedzinie częstotliwości o 30 kHz tak żeby się
+%go przyjemnie oglądało. Krótko mówiąc zrób dokładnie to samo co w punkcie
+%todo 4
+t2 = (0:(length(rcSyms)-1)) * Ts;
+figure;
+cplxModRC=rcSyms.* exp(1i * 2 * pi * fc * t2)';
+realModRC=real(cplxModRC);
+title('postać rzeczywista sygnału QPSK filtrowanego filtrem RC');
+plot(realModRC);
 
 
